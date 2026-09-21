@@ -1,1 +1,1 @@
-export { transliterate } from './transliterate';
+export { transliterate } from './transliterate.js';

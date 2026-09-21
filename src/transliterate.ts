@@ -7,7 +7,7 @@ import {
   MATRA_KEYS,
   CONSONANT_KEYS,
   matchLongest,
-} from './rules';
+} from './rules.js';
 
 export function transliterate(input: string): string {
   let result = '';

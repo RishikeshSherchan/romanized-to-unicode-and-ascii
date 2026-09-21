@@ -39,4 +39,8 @@ describe('transliterate', () => {
   it('passes through unmapped characters unchanged', () => {
     expect(transliterate('ka 5!')).toBe('क 5!');
   });
+
+  it('handles a full sentence with spaces, digits, and punctuation', () => {
+    expect(transliterate('namaste 2026!')).toBe('नमस्ते 2026!');
+  });
 });

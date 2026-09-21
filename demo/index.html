@@ -73,11 +73,28 @@
       applyFont();
     }
 
-    // Replaces the field's own contents as you type. Cursor snaps to the
-    // end after each keystroke — good enough for typing forward; editing
-    // mid-word requires cursor-position mapping, which this demo skips.
-    input.addEventListener('input', () => {
-      input.value = transliterate(input.value);
+    // The field only ever shows the transliterated (Devanagari) text, so it
+    // can't also be the source of truth for what was typed — re-running
+    // transliterate() on its own displayed output would feed Devanagari
+    // characters back in as if they were romanized input. Instead, track
+    // the raw romanized buffer separately and always transliterate fresh
+    // from that. Cursor snaps to the end after each keystroke — good
+    // enough for typing/backspacing forward; editing mid-word requires
+    // cursor-position mapping, which this demo skips.
+    let raw = '';
+
+    input.addEventListener('beforeinput', (e) => {
+      e.preventDefault();
+      if (e.inputType === 'deleteContentBackward') {
+        raw = raw.slice(0, -1);
+      } else if (e.inputType === 'insertLineBreak') {
+        raw += '\n';
+      } else if (e.data) {
+        raw += e.data;
+      } else {
+        return;
+      }
+      input.value = transliterate(raw);
       input.selectionStart = input.selectionEnd = input.value.length;
     });
   </script>

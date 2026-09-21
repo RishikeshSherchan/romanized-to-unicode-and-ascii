@@ -10,7 +10,7 @@
     margin: 40px auto;
     padding: 0 16px;
   }
-  textarea, #output {
+  textarea {
     width: 100%;
     box-sizing: border-box;
     font-size: 22px;
@@ -18,10 +18,6 @@
     border: 1px solid #ccc;
     border-radius: 6px;
     min-height: 120px;
-  }
-  #output {
-    background: #fafafa;
-    white-space: pre-wrap;
   }
   label {
     display: block;
@@ -36,17 +32,14 @@
 </head>
 <body>
   <h1>nepali-unicode font test</h1>
-  <p>Type romanized text below (e.g. "namaste"). It converts live to Devanagari Unicode, rendered in the font you pick.</p>
+  <p>Type romanized text below (e.g. "namaste") — it converts to Devanagari Unicode as you type, rendered in the font you pick.</p>
 
   <label for="font-select">Font</label>
   <select id="font-select"></select>
   <p id="no-fonts" hidden>No fonts in <code>demo/fonts.js</code> yet — add an entry for each file you drop into <code>demo/fonts/</code>.</p>
 
-  <label for="input">Romanized input</label>
+  <label for="input">Type here</label>
   <textarea id="input" placeholder="namaste"></textarea>
-
-  <label for="output">Devanagari output</label>
-  <div id="output"></div>
 
   <script type="module">
     import { transliterate } from '../dist/index.js';
@@ -55,7 +48,6 @@
     const select = document.getElementById('font-select');
     const noFontsNotice = document.getElementById('no-fonts');
     const input = document.getElementById('input');
-    const output = document.getElementById('output');
 
     if (FONTS.length === 0) {
       noFontsNotice.hidden = false;
@@ -75,14 +67,18 @@
       }
 
       const applyFont = () => {
-        output.style.fontFamily = `"${select.value}"`;
+        input.style.fontFamily = `"${select.value}"`;
       };
       select.addEventListener('change', applyFont);
       applyFont();
     }
 
+    // Replaces the field's own contents as you type. Cursor snaps to the
+    // end after each keystroke — good enough for typing forward; editing
+    // mid-word requires cursor-position mapping, which this demo skips.
     input.addEventListener('input', () => {
-      output.textContent = transliterate(input.value);
+      input.value = transliterate(input.value);
+      input.selectionStart = input.selectionEnd = input.value.length;
     });
   </script>
 </body>

@@ -1,2 +1,4 @@
 node_modules
 dist
+demo/fonts/*
+!demo/fonts/.gitkeep

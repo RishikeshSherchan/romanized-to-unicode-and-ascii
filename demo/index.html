@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="ne">
+<head>
+<meta charset="utf-8" />
+<title>nepali-unicode demo</title>
+<style>
+  body {
+    font-family: system-ui, sans-serif;
+    max-width: 720px;
+    margin: 40px auto;
+    padding: 0 16px;
+  }
+  textarea, #output {
+    width: 100%;
+    box-sizing: border-box;
+    font-size: 22px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    min-height: 120px;
+  }
+  #output {
+    background: #fafafa;
+    white-space: pre-wrap;
+  }
+  label {
+    display: block;
+    margin: 20px 0 6px;
+    font-weight: 600;
+  }
+  #no-fonts {
+    color: #a00;
+    font-size: 14px;
+  }
+</style>
+</head>
+<body>
+  <h1>nepali-unicode font test</h1>
+  <p>Type romanized text below (e.g. "namaste"). It converts live to Devanagari Unicode, rendered in the font you pick.</p>
+
+  <label for="font-select">Font</label>
+  <select id="font-select"></select>
+  <p id="no-fonts" hidden>No fonts in <code>demo/fonts.js</code> yet — add an entry for each file you drop into <code>demo/fonts/</code>.</p>
+
+  <label for="input">Romanized input</label>
+  <textarea id="input" placeholder="namaste"></textarea>
+
+  <label for="output">Devanagari output</label>
+  <div id="output"></div>
+
+  <script type="module">
+    import { transliterate } from '../dist/index.js';
+    import { FONTS } from './fonts.js';
+
+    const select = document.getElementById('font-select');
+    const noFontsNotice = document.getElementById('no-fonts');
+    const input = document.getElementById('input');
+    const output = document.getElementById('output');
+
+    if (FONTS.length === 0) {
+      noFontsNotice.hidden = false;
+      select.disabled = true;
+    } else {
+      const styleEl = document.createElement('style');
+      styleEl.textContent = FONTS.map(
+        (f) => `@font-face { font-family: "${f.name}"; src: url("fonts/${f.file}"); }`
+      ).join('\n');
+      document.head.appendChild(styleEl);
+
+      for (const f of FONTS) {
+        const option = document.createElement('option');
+        option.value = f.name;
+        option.textContent = f.name;
+        select.appendChild(option);
+      }
+
+      const applyFont = () => {
+        output.style.fontFamily = `"${select.value}"`;
+      };
+      select.addEventListener('change', applyFont);
+      applyFont();
+    }
+
+    input.addEventListener('input', () => {
+      output.textContent = transliterate(input.value);
+    });
+  </script>
+</body>
+</html>

@@ -2,6 +2,7 @@ import { matchLongest, sortedByLengthDesc } from './rules.js';
 
 const SHORT_I_MATRA = 'ि';
 const REPH = 'र्'; // र + halant, as the first member of a conjunct (e.g. धर्म)
+const SUBSCRIPT_RA = '्र'; // halant + र, as the SECOND member of a conjunct (e.g. प्र, क्र)
 
 // Ordinary (non-pre-base) vowel signs and nasal marks. Used only to decide
 // whether a character right after a reph-target consonant is decoration on
@@ -55,6 +56,15 @@ export function createLegacyFontConverter(forwardMap: Record<string, string>) {
     }
   }
 
+  // Two keys decoding to the same Unicode value doesn't mean they render
+  // identically — confirmed by testing in an actual Preeti-installed
+  // editor: '«' and '|' both decode to '्र' (subscript-र), but only '|'
+  // renders correctly; '«' shows visibly wrong. Since the table can't tell
+  // us which is visually correct, prefer '|' explicitly when both exist.
+  if (forwardMap['|'] === SUBSCRIPT_RA && forwardMap['«'] === SUBSCRIPT_RA) {
+    reverseMap[SUBSCRIPT_RA] = '|';
+  }
+
   // These fonts have no single key for the "compound" matras/vowels ो, ौ,
   // ओ, औ — they're built from two or three separate keys (confirmed via
   // Shuvayatra/preeti's test vectors, e.g. "आफ्नो" encodes ो as its ा-key
@@ -86,6 +96,7 @@ export function createLegacyFontConverter(forwardMap: Record<string, string>) {
 
   const unicodeKeys = sortedByLengthDesc(Object.keys(reverseMap));
   const shortIKey = reverseMap[SHORT_I_MATRA];
+  const subscriptRaKey = reverseMap[SUBSCRIPT_RA];
 
   // Converts real Devanagari Unicode into the legacy font's ASCII-glyph
   // encoding, so text can be displayed correctly in that font (which has
@@ -104,11 +115,34 @@ export function createLegacyFontConverter(forwardMap: Record<string, string>) {
   // opposite problem: Unicode puts it BEFORE the consonant it attaches to,
   // but it renders as a small hook above/after that consonant, and typing
   // it requires the consonant's own key followed by the reph trigger.
+  //
+  // र as the SECOND member of a conjunct (प्र, क्र, ...) needs its own care:
+  // greedy longest-match would happily consume [consonant]+halant as that
+  // consonant's own precomposed halant-key (प् -> K), leaving र to be typed
+  // separately (bare र -> /) — technically a valid decoding, but visually
+  // wrong, since these fonts draw a dedicated subscript-र glyph meant to
+  // attach to a FULL-form consonant, not their own halant-form. Confirmed
+  // against a working reference converter for प्र specifically: the
+  // correct encoding is [bare consonant][subscript-र key], not
+  // [consonant's halant-key][bare र]. The handful of conjuncts with their
+  // own hand-drawn ligature (त्र, द्र, श्र, ध्र) are unaffected — those are
+  // matched whole by the normal longest-match path below before this
+  // check would ever apply.
   function toLegacy(text: string): string {
     let result = '';
     let i = 0;
 
     while (i < text.length) {
+      if (subscriptRaKey && text.startsWith(SUBSCRIPT_RA, i + 1)) {
+        const precomposed = matchLongest(text, i, unicodeKeys);
+        const bareConsonantKey = reverseMap[text[i]];
+        if (!(precomposed && precomposed.length === 1 + SUBSCRIPT_RA.length) && bareConsonantKey) {
+          result += bareConsonantKey + subscriptRaKey;
+          i += 1 + SUBSCRIPT_RA.length;
+          continue;
+        }
+      }
+
       if (text.startsWith(REPH, i)) {
         const following = matchLongest(text, i + REPH.length, unicodeKeys);
         if (following) {

@@ -70,4 +70,8 @@ describe('unicodeToKantipur', () => {
     // shorter, more direct "ClÈ" instead.
     expect(unicodeToKantipur('ऋषि')).toBe('ClÈ');
   });
+
+  it('uses bare consonant + subscript-र key, preferring the visually-correct duplicate key', () => {
+    expect(unicodeToKantipur('उप्रेती')).toBe('pk|]tL');
+  });
 });

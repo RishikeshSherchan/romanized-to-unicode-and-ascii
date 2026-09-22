@@ -65,4 +65,17 @@ describe('unicodeToPreeti', () => {
     // च and its matra.
     expect(unicodeToPreeti('निमार्चोक')).toBe('lgdfrf]{s');
   });
+
+  it('uses bare consonant + subscript-र key for conjuncts with no dedicated ligature', () => {
+    // प्र has no precomposed key (only त्र, द्र, श्र, ध्र do) — a working
+    // reference converter confirms the correct encoding is bare प + the
+    // subscript-र key ('|', verified in an actual Preeti-installed editor —
+    // '«' decodes to the same Unicode value but renders visibly wrong),
+    // not प्'s own halant-key followed by bare र.
+    expect(unicodeToPreeti('उप्रेती')).toBe('pk|]tL');
+  });
+
+  it('leaves conjuncts with their own precomposed ligature key untouched', () => {
+    expect(unicodeToPreeti('मित्र')).toBe('ldq');
+  });
 });

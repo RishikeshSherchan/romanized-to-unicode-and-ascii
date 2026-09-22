@@ -57,12 +57,22 @@ export function createLegacyFontConverter(forwardMap: Record<string, string>) {
   }
 
   // Two keys decoding to the same Unicode value doesn't mean they render
-  // identically — confirmed by testing in an actual Preeti-installed
-  // editor: '«' and '|' both decode to '्र' (subscript-र), but only '|'
-  // renders correctly; '«' shows visibly wrong. Since the table can't tell
-  // us which is visually correct, prefer '|' explicitly when both exist.
-  if (forwardMap['|'] === SUBSCRIPT_RA && forwardMap['«'] === SUBSCRIPT_RA) {
-    reverseMap[SUBSCRIPT_RA] = '|';
+  // identically — confirmed empirically (not guessed) in real testing:
+  // Preeti's '«' and '|' both decode to '्र' (subscript-र), but only '|'
+  // renders correctly ('«' shows visibly wrong in an actual Preeti-
+  // installed editor); Himali's 'F' and 'f' both decode to 'ा', but its
+  // own test vectors consistently use 'f'. Since the table itself gives no
+  // signal for which duplicate is the visually-correct one, list the
+  // preferences we've actually confirmed and apply them when both keys
+  // exist for a given font.
+  const KEY_PREFERENCES: Array<[unicodeValue: string, preferred: string, other: string]> = [
+    [SUBSCRIPT_RA, '|', '«'],
+    ['ा', 'f', 'F'],
+  ];
+  for (const [value, preferred, other] of KEY_PREFERENCES) {
+    if (forwardMap[preferred] === value && forwardMap[other] === value) {
+      reverseMap[value] = preferred;
+    }
   }
 
   // These fonts have no single key for the "compound" matras/vowels ो, ौ,
@@ -93,6 +103,12 @@ export function createLegacyFontConverter(forwardMap: Record<string, string>) {
   }
   const pa = reverseMap['प'];
   if (pa) reverseMap['फ'] ??= pa + M_MODIFIER;
+
+  // Independent (word-initial, non-matra) ऊ has no key of its own either —
+  // same 'm'-modifier trick as फ, confirmed via "hfpm" -> "जाऊ" in the
+  // shared test vectors (उ-key + 'm' collapses to ऊ via a post-rule).
+  const ua = reverseMap['उ'];
+  if (ua) reverseMap['ऊ'] ??= ua + M_MODIFIER;
 
   const unicodeKeys = sortedByLengthDesc(Object.keys(reverseMap));
   const shortIKey = reverseMap[SHORT_I_MATRA];
@@ -137,8 +153,20 @@ export function createLegacyFontConverter(forwardMap: Record<string, string>) {
         const precomposed = matchLongest(text, i, unicodeKeys);
         const bareConsonantKey = reverseMap[text[i]];
         if (!(precomposed && precomposed.length === 1 + SUBSCRIPT_RA.length) && bareConsonantKey) {
-          result += bareConsonantKey + subscriptRaKey;
-          i += 1 + SUBSCRIPT_RA.length;
+          let consumed = 1 + SUBSCRIPT_RA.length;
+          let unit = bareConsonantKey + subscriptRaKey;
+
+          // The whole [consonant]+्र cluster (राष्ट्रिय's ट्र, प्रतिक्रिया's
+          // क्र) is itself just a "consonant" as far as a following short-i
+          // is concerned — ि still needs to move before the WHOLE cluster,
+          // not sit stranded after it.
+          if (text.startsWith(SHORT_I_MATRA, i + consumed)) {
+            unit = shortIKey + unit;
+            consumed += SHORT_I_MATRA.length;
+          }
+
+          result += unit;
+          i += consumed;
           continue;
         }
       }

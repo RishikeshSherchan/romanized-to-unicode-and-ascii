@@ -70,7 +70,7 @@
   </div>
 
   <script type="module">
-    import { transliterate, unicodeToPreeti, unicodeToKantipur } from '../dist/index.js';
+    import { transliterate, unicodeToPreeti, unicodeToKantipur, unicodeToHimali } from '../dist/index.js';
     import { FONTS } from './fonts.js';
 
     // Maps each font's `legacy` value to the converter that turns real
@@ -78,6 +78,7 @@
     const LEGACY_CONVERTERS = {
       preeti: unicodeToPreeti,
       kantipur: unicodeToKantipur,
+      himali: unicodeToHimali,
     };
 
     const select = document.getElementById('font-select');

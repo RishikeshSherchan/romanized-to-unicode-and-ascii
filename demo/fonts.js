@@ -8,4 +8,6 @@ export const FONTS = [
   { name: 'Noto Sans Devanagari Black', file: 'NotoSansDevanagari-Black.ttf' },
   { name: 'Hind Regular', file: 'Hind-Regular.ttf' },
   { name: 'Hind Bold', file: 'Hind-Bold.ttf' },
+  { name: 'Preeti Regular', file: 'Preeti Normal.otf' },
+  { name: 'Preeti Bold', file: 'Preeti Bold.otf' },
 ];

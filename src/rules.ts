@@ -78,7 +78,7 @@ export const CONSONANTS: Record<string, string> = {
   h: 'ह',
 };
 
-function sortedByLengthDesc(keys: string[]): string[] {
+export function sortedByLengthDesc(keys: string[]): string[] {
   return [...keys].sort((a, b) => b.length - a.length);
 }
 

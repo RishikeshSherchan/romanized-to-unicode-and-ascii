@@ -70,7 +70,7 @@
   </div>
 
   <script type="module">
-    import { transliterate } from '../dist/index.js';
+    import { transliterate, unicodeToPreeti } from '../dist/index.js';
     import { FONTS } from './fonts.js';
 
     const select = document.getElementById('font-select');
@@ -78,6 +78,26 @@
     const input = document.getElementById('input');
     const rawPreeti = document.getElementById('raw-preeti');
     rawPreeti.style.fontFamily = '"Preeti Regular"';
+
+    let selectedFont = FONTS[0];
+
+    // The field only ever shows converted text, so it can't also be the
+    // source of truth for what was typed — instead track the raw romanized
+    // buffer separately and always convert fresh from that. Cursor snaps
+    // to the end after each keystroke — good enough for typing/backspacing
+    // forward; editing mid-word requires cursor-position mapping, which
+    // this demo skips.
+    let raw = '';
+
+    // Renders `raw` into the main box for whatever font is currently
+    // selected: legacy fonts (Preeti, etc.) need unicodeToPreeti() applied
+    // first since they have no real Devanagari Unicode glyphs to render
+    // directly; modern fonts show the transliterated Unicode as-is.
+    const render = () => {
+      const unicodeText = transliterate(raw);
+      input.value = selectedFont?.legacy ? unicodeToPreeti(unicodeText) : unicodeText;
+      input.selectionStart = input.selectionEnd = input.value.length;
+    };
 
     if (FONTS.length === 0) {
       noFontsNotice.hidden = false;
@@ -97,21 +117,13 @@
       }
 
       const applyFont = () => {
+        selectedFont = FONTS.find((f) => f.name === select.value);
         input.style.fontFamily = `"${select.value}"`;
+        render();
       };
       select.addEventListener('change', applyFont);
       applyFont();
     }
-
-    // The field only ever shows the transliterated (Devanagari) text, so it
-    // can't also be the source of truth for what was typed — re-running
-    // transliterate() on its own displayed output would feed Devanagari
-    // characters back in as if they were romanized input. Instead, track
-    // the raw romanized buffer separately and always transliterate fresh
-    // from that. Cursor snaps to the end after each keystroke — good
-    // enough for typing/backspacing forward; editing mid-word requires
-    // cursor-position mapping, which this demo skips.
-    let raw = '';
 
     input.addEventListener('beforeinput', (e) => {
       e.preventDefault();
@@ -124,8 +136,7 @@
       } else {
         return;
       }
-      input.value = transliterate(raw);
-      input.selectionStart = input.selectionEnd = input.value.length;
+      render();
       rawPreeti.textContent = raw;
     });
   </script>

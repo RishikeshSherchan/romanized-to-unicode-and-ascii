@@ -6,11 +6,13 @@ export const VOWELS: Record<string, string> = {
   uu: 'ऊ', U: 'ऊ',
   ai: 'ऐ',
   au: 'औ',
+  RR: 'ॠ',
   a: 'अ',
   i: 'इ',
   u: 'उ',
   e: 'ए',
   o: 'ओ',
+  R: 'ऋ',
 };
 
 export const MATRAS: Record<string, string> = {
@@ -19,10 +21,19 @@ export const MATRAS: Record<string, string> = {
   uu: 'ू', U: 'ू',
   ai: 'ै',
   au: 'ौ',
+  RR: 'ॄ',
   i: 'ि',
   u: 'ु',
   e: 'े',
   o: 'ो',
+  R: 'ृ',
+};
+
+// Standalone combining marks: not consonants or vowels themselves, just
+// inserted directly wherever their trigger key appears (e.g. right after
+// the vowel they nasalize).
+export const MARKS: Record<string, string> = {
+  '~': 'ँ', // chandrabindu — nasalizes the preceding vowel, e.g. aa~khaa -> आँखा
 };
 
 export const CONSONANTS: Record<string, string> = {
@@ -72,6 +83,7 @@ function sortedByLengthDesc(keys: string[]): string[] {
 export const VOWEL_KEYS = sortedByLengthDesc(Object.keys(VOWELS));
 export const MATRA_KEYS = sortedByLengthDesc(Object.keys(MATRAS));
 export const CONSONANT_KEYS = sortedByLengthDesc(Object.keys(CONSONANTS));
+export const MARK_KEYS = sortedByLengthDesc(Object.keys(MARKS));
 
 export function matchLongest(input: string, pos: number, keys: string[]): string | null {
   for (const key of keys) {

@@ -43,4 +43,14 @@ describe('transliterate', () => {
   it('handles a full sentence with spaces, digits, and punctuation', () => {
     expect(transliterate('namaste 2026!')).toBe('नमस्ते 2026!');
   });
+
+  it('converts vocalic R words (short and long)', () => {
+    expect(transliterate('RShi')).toBe('ऋषि');
+    expect(transliterate('kRShNa')).toBe('कृष्ण');
+    expect(transliterate('RR')).toBe('ॠ');
+  });
+
+  it('inserts chandrabindu right after the vowel it nasalizes', () => {
+    expect(transliterate('aa~khaa')).toBe('आँखा');
+  });
 });

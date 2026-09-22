@@ -2,10 +2,12 @@ import {
   VOWELS,
   MATRAS,
   CONSONANTS,
+  MARKS,
   HALANT,
   VOWEL_KEYS,
   MATRA_KEYS,
   CONSONANT_KEYS,
+  MARK_KEYS,
   matchLongest,
 } from './rules.js';
 
@@ -14,6 +16,13 @@ export function transliterate(input: string): string {
   let i = 0;
 
   while (i < input.length) {
+    const markKey = matchLongest(input, i, MARK_KEYS);
+    if (markKey) {
+      result += MARKS[markKey];
+      i += markKey.length;
+      continue;
+    }
+
     const consonantKey = matchLongest(input, i, CONSONANT_KEYS);
 
     if (consonantKey) {

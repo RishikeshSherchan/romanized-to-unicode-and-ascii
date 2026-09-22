@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { CONSONANTS, VOWELS, MATRAS, CONSONANT_KEYS, matchLongest } from './rules';
+import { CONSONANTS, VOWELS, MATRAS, MARKS, CONSONANT_KEYS, matchLongest } from './rules';
 
 describe('rules tables', () => {
   it('maps basic consonants, vowels, and matras', () => {
@@ -7,6 +7,14 @@ describe('rules tables', () => {
     expect(CONSONANTS.chh).toBe('छ');
     expect(VOWELS.a).toBe('अ');
     expect(MATRAS.aa).toBe('ा');
+  });
+
+  it('maps vocalic R vowels and the chandrabindu mark', () => {
+    expect(VOWELS.R).toBe('ऋ');
+    expect(VOWELS.RR).toBe('ॠ');
+    expect(MATRAS.R).toBe('ृ');
+    expect(MATRAS.RR).toBe('ॄ');
+    expect(MARKS['~']).toBe('ँ');
   });
 
   it('orders consonant keys longest-first so multi-character sounds win', () => {

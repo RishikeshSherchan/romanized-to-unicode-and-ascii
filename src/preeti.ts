@@ -1,4 +1,4 @@
-import { matchLongest, sortedByLengthDesc } from './rules.js';
+import { createLegacyFontConverter } from './legacyFont.js';
 
 // Preeti's key-to-glyph mapping is font-designer-arbitrary (not phonetic),
 // so this table is transcribed directly from a verified open-source source
@@ -143,68 +143,8 @@ export const PREETI_TO_UNICODE: Record<string, string> = {
   Ü: '%',
 };
 
-// The reverse direction is derived from PREETI_TO_UNICODE, never
-// hand-transcribed, so it can't drift from the verified forward table.
-// A few Unicode values are reachable from more than one Preeti key (e.g.
-// both '/' and '©' produce 'र'); the first key encountered wins, which is
-// stable since Object.entries preserves insertion order.
-//
-// Some Preeti keys are plain ASCII/punctuation passthroughs baked into the
-// same table (e.g. 'Û' -> '!', 'Ö' -> '='), for typing ordinary symbols
-// while in Preeti mode. Inverting those would make unicodeToPreeti "convert"
-// already-fine punctuation into a different Preeti key, so only Devanagari
-// values (U+0900-U+097F) are included in the reverse map.
-function isDevanagari(value: string): boolean {
-  return [...value].some((ch) => {
-    const code = ch.codePointAt(0) ?? 0;
-    return code >= 0x0900 && code <= 0x097f;
-  });
-}
-
-export const UNICODE_TO_PREETI: Record<string, string> = {};
-for (const [preetiKey, unicodeSeq] of Object.entries(PREETI_TO_UNICODE)) {
-  if (isDevanagari(unicodeSeq) && !(unicodeSeq in UNICODE_TO_PREETI)) {
-    UNICODE_TO_PREETI[unicodeSeq] = preetiKey;
-  }
-}
-
-const UNICODE_KEYS = sortedByLengthDesc(Object.keys(UNICODE_TO_PREETI));
-
-const SHORT_I_MATRA = 'ि';
-const SHORT_I_KEY = UNICODE_TO_PREETI[SHORT_I_MATRA];
-
-// Converts real Devanagari Unicode into Preeti's legacy ASCII-glyph
-// encoding, so text can be displayed correctly in old Preeti-style fonts
-// (which have no glyphs at all in the Unicode Devanagari range — see
-// README). Longest-match first because some Unicode sequences (e.g.
-// द्द, 3 codepoints) contain a shorter valid sequence (द्) as a prefix.
-//
-// The short-i matra (ि) is Unicode's one "pre-base" vowel sign: it's
-// encoded AFTER its consonant (logical order) but renders BEFORE it
-// visually — normally a font's shaping engine reorders this, but Preeti
-// has no shaping smarts and just draws glyphs in the order given, so the
-// key for ि must be emitted before the consonant's key whenever it
-// follows one in the source text.
-export function unicodeToPreeti(text: string): string {
-  let result = '';
-  let i = 0;
-
-  while (i < text.length) {
-    const seq = matchLongest(text, i, UNICODE_KEYS);
-    if (seq) {
-      const key = UNICODE_TO_PREETI[seq];
-      if (seq !== SHORT_I_MATRA && text.startsWith(SHORT_I_MATRA, i + seq.length)) {
-        result += SHORT_I_KEY + key;
-        i += seq.length + SHORT_I_MATRA.length;
-      } else {
-        result += key;
-        i += seq.length;
-      }
-    } else {
-      result += text[i];
-      i += 1;
-    }
-  }
-
-  return result;
-}
+// Includes both the direct inverse of PREETI_TO_UNICODE and the composite
+// entries (ो, ौ, ओ, औ, ण, ष, फ) that createLegacyFontConverter derives on
+// top of it — see legacyFont.ts for why those need special handling.
+export const { reverseMap: UNICODE_TO_PREETI, toLegacy: unicodeToPreeti } =
+  createLegacyFontConverter(PREETI_TO_UNICODE);

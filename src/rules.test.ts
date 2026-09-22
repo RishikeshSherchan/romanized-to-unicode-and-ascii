@@ -15,6 +15,7 @@ describe('rules tables', () => {
     expect(MATRAS.R).toBe('ृ');
     expect(MATRAS.RR).toBe('ॄ');
     expect(MARKS['~']).toBe('ँ');
+    expect(MARKS.M).toBe('ं');
     expect(MARKS['.']).toBe('।');
   });
 

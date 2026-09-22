@@ -34,6 +34,7 @@ export const MATRAS: Record<string, string> = {
 // the vowel they nasalize).
 export const MARKS: Record<string, string> = {
   '~': 'ँ', // chandrabindu — nasalizes the preceding vowel, e.g. aa~khaa -> आँखा
+  M: 'ं', // anusvara — nasal after a vowel, e.g. kaaThamaaDauM -> काठमाडौं
   '.': '।', // purna biram (danda) — Devanagari full stop
 };
 

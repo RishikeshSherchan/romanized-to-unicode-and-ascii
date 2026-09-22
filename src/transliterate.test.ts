@@ -57,4 +57,8 @@ describe('transliterate', () => {
   it('converts a period to purna biram (danda)', () => {
     expect(transliterate('aankhaa mero naam ho.')).toBe('आन्खा मेरो नाम हो।');
   });
+
+  it('inserts anusvara after the vowel it nasalizes', () => {
+    expect(transliterate('kaaThamaaDauM')).toBe('काठमाडौं');
+  });
 });

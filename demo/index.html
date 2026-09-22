@@ -63,20 +63,27 @@
       <p class="caption">Transliterated to real Devanagari Unicode, rendered in the font you picked above.</p>
     </div>
     <div>
-      <label>Preeti-encoded text (raw ASCII, not rendered in Preeti)</label>
+      <label>Legacy-encoded text (raw ASCII, not rendered)</label>
       <div id="preeti-encoded" class="box"></div>
-      <p class="caption">The literal characters Preeti would need to draw the box on the left — e.g. "namaste" becomes the ASCII string "gd:t]", which only looks like नमस्ते when displayed in the Preeti font.</p>
+      <p class="caption">The literal characters the selected legacy font (or Preeti, by default) would need — e.g. "namaste" becomes the ASCII string "gd:t]" in Preeti, which only looks like नमस्ते once displayed in that font.</p>
     </div>
   </div>
 
   <script type="module">
-    import { transliterate, unicodeToPreeti } from '../dist/index.js';
+    import { transliterate, unicodeToPreeti, unicodeToKantipur } from '../dist/index.js';
     import { FONTS } from './fonts.js';
+
+    // Maps each font's `legacy` value to the converter that turns real
+    // Unicode into that font's own ASCII-glyph encoding.
+    const LEGACY_CONVERTERS = {
+      preeti: unicodeToPreeti,
+      kantipur: unicodeToKantipur,
+    };
 
     const select = document.getElementById('font-select');
     const noFontsNotice = document.getElementById('no-fonts');
     const input = document.getElementById('input');
-    const preetiEncoded = document.getElementById('preeti-encoded');
+    const legacyEncoded = document.getElementById('preeti-encoded');
 
     let selectedFont = FONTS[0];
 
@@ -89,15 +96,20 @@
     let raw = '';
 
     // Renders `raw` into the main box for whatever font is currently
-    // selected: legacy fonts (Preeti, etc.) need unicodeToPreeti() applied
-    // first since they have no real Devanagari Unicode glyphs to render
-    // directly; modern fonts show the transliterated Unicode as-is.
+    // selected: legacy fonts (Preeti, Kantipur, ...) need their own
+    // Unicode-to-legacy converter applied first since they have no real
+    // Devanagari Unicode glyphs to render directly; modern fonts show the
+    // transliterated Unicode as-is. The reference box on the right always
+    // shows *some* legacy encoding for comparison — whichever font is
+    // selected, or Preeti's by default when a normal Unicode font is picked.
     const render = () => {
       const unicodeText = transliterate(raw);
-      const preetiText = unicodeToPreeti(unicodeText);
-      input.value = selectedFont?.legacy ? preetiText : unicodeText;
+      const selectedConverter = LEGACY_CONVERTERS[selectedFont?.legacy];
+      input.value = selectedConverter ? selectedConverter(unicodeText) : unicodeText;
       input.selectionStart = input.selectionEnd = input.value.length;
-      preetiEncoded.textContent = preetiText;
+
+      const referenceConverter = LEGACY_CONVERTERS[selectedFont?.legacy ?? 'preeti'];
+      legacyEncoded.textContent = referenceConverter(unicodeText);
     };
 
     if (FONTS.length === 0) {

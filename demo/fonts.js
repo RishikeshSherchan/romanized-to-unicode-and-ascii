@@ -1,9 +1,10 @@
 // Add one entry per font file you drop into demo/fonts/.
 // name: whatever you want to see in the dropdown
 // file: the exact filename inside demo/fonts/
-// legacy: true for ASCII-glyph-hack fonts (Preeti, Kantipur, etc.) with no
-//   real Unicode Devanagari glyphs — the demo runs unicodeToPreeti() before
-//   displaying text in these, instead of showing raw Unicode.
+// legacy: which converter to run before displaying text in this font
+//   (ASCII-glyph-hack fonts have no real Unicode Devanagari glyphs, so the
+//   demo must convert first) — 'preeti', 'kantipur', or omit for a normal
+//   Unicode font.
 export const FONTS = [
   { name: 'Noto Sans Devanagari Regular', file: 'NotoSansDevanagari-Regular.ttf' },
   { name: 'Noto Sans Devanagari Medium', file: 'NotoSansDevanagari-Medium.ttf' },
@@ -11,6 +12,7 @@ export const FONTS = [
   { name: 'Noto Sans Devanagari Black', file: 'NotoSansDevanagari-Black.ttf' },
   { name: 'Hind Regular', file: 'Hind-Regular.ttf' },
   { name: 'Hind Bold', file: 'Hind-Bold.ttf' },
-  { name: 'Preeti Regular', file: 'Preeti Normal.otf', legacy: true },
-  { name: 'Preeti Bold', file: 'Preeti Bold.otf', legacy: true },
+  { name: 'Preeti Regular', file: 'Preeti Normal.otf', legacy: 'preeti' },
+  { name: 'Preeti Bold', file: 'Preeti Bold.otf', legacy: 'preeti' },
+  // { name: 'Kantipur', file: 'Kantipur.ttf', legacy: 'kantipur' },
 ];

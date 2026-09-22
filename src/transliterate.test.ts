@@ -93,6 +93,6 @@ describe('transliterate', () => {
     expect(transliterate('dhunga')).toBe('ढुंगा');
     expect(transliterate('ghadi')).toBe('घडी');
     expect(transliterate('natak')).toBe('नाटक');
-    expect(transliterate('thulo')).toBe('ठूलो');
+    expect(transliterate('thulo')).toBe('ठुलो');
   });
 });

@@ -18,5 +18,5 @@ export const WORDS: Record<string, string> = {
   dhunga: 'ढुंगा',
   ghadi: 'घडी',
   natak: 'नाटक',
-  thulo: 'ठूलो',
+  thulo: 'ठुलो',
 };

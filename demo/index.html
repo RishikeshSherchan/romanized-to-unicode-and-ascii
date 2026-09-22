@@ -10,7 +10,7 @@
     margin: 40px auto;
     padding: 0 16px;
   }
-  textarea {
+  textarea, .box {
     width: 100%;
     box-sizing: border-box;
     font-size: 22px;
@@ -18,6 +18,10 @@
     border: 1px solid #ccc;
     border-radius: 6px;
     min-height: 120px;
+  }
+  .box {
+    background: #fafafa;
+    white-space: pre-wrap;
   }
   label {
     display: block;
@@ -27,6 +31,20 @@
   #no-fonts {
     color: #a00;
     font-size: 14px;
+  }
+  .compare {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .compare > div {
+    flex: 1 1 280px;
+    min-width: 0;
+  }
+  .caption {
+    font-size: 13px;
+    color: #666;
+    margin-top: 6px;
   }
 </style>
 </head>
@@ -38,8 +56,18 @@
   <select id="font-select"></select>
   <p id="no-fonts" hidden>No fonts in <code>demo/fonts.js</code> yet — add an entry for each file you drop into <code>demo/fonts/</code>.</p>
 
-  <label for="input">Type here</label>
-  <textarea id="input" placeholder="namaste"></textarea>
+  <div class="compare">
+    <div>
+      <label for="input">Type here (new way)</label>
+      <textarea id="input" placeholder="namaste"></textarea>
+      <p class="caption">Transliterated to real Devanagari Unicode, rendered in the font you picked above.</p>
+    </div>
+    <div>
+      <label>Old way (same raw text + Preeti)</label>
+      <div id="raw-preeti" class="box"></div>
+      <p class="caption">The exact same keystrokes, never transliterated, shown in Preeti — this is how the old ASCII-glyph-hack fonts actually worked.</p>
+    </div>
+  </div>
 
   <script type="module">
     import { transliterate } from '../dist/index.js';
@@ -48,6 +76,8 @@
     const select = document.getElementById('font-select');
     const noFontsNotice = document.getElementById('no-fonts');
     const input = document.getElementById('input');
+    const rawPreeti = document.getElementById('raw-preeti');
+    rawPreeti.style.fontFamily = '"Preeti Regular"';
 
     if (FONTS.length === 0) {
       noFontsNotice.hidden = false;
@@ -96,6 +126,7 @@
       }
       input.value = transliterate(raw);
       input.selectionStart = input.selectionEnd = input.value.length;
+      rawPreeti.textContent = raw;
     });
   </script>
 </body>

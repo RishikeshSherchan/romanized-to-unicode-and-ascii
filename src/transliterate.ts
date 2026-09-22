@@ -10,8 +10,24 @@ import {
   MARK_KEYS,
   matchLongest,
 } from './rules.js';
+import { WORDS } from './words.js';
 
-export function transliterate(input: string): string {
+// A "word" is a maximal run of letters (or the mid-word chandrabindu
+// trigger `~`); everything else (spaces, digits, punctuation) is a
+// separator. Splitting on this boundary is what lets the dictionary
+// look up whole words while leaving surrounding text untouched.
+const WORD_TOKEN = /[A-Za-z~]+|[^A-Za-z~]+/g;
+
+export function transliterate(input: string, extraWords?: Record<string, string>): string {
+  const dictionary = extraWords ? { ...WORDS, ...extraWords } : WORDS;
+  const tokens = input.match(WORD_TOKEN) ?? [];
+
+  return tokens
+    .map((token) => dictionary[token.toLowerCase()] ?? transliteratePhonetic(token))
+    .join('');
+}
+
+function transliteratePhonetic(input: string): string {
   let result = '';
   let i = 0;
 

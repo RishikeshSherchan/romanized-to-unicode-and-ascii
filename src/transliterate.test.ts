@@ -61,4 +61,23 @@ describe('transliterate', () => {
   it('inserts anusvara after the vowel it nasalizes', () => {
     expect(transliterate('kaaThamaaDauM')).toBe('काठमाडौं');
   });
+
+  it('looks up dictionary words regardless of casing', () => {
+    expect(transliterate('kathmandu')).toBe('काठमाडौं');
+    expect(transliterate('Kathmandu')).toBe('काठमाडौं');
+    expect(transliterate('KATHMANDU')).toBe('काठमाडौं');
+  });
+
+  it('uses the dictionary for a word embedded in a phonetic sentence', () => {
+    expect(transliterate('kathmandu sundar chha.')).toBe('काठमाडौं सुन्दर छ।');
+  });
+
+  it('falls through to the phonetic engine for words not in the dictionary', () => {
+    expect(transliterate('namaste')).toBe('नमस्ते');
+  });
+
+  it('merges in extraWords, which override the built-in dictionary', () => {
+    expect(transliterate('biratnagar', { biratnagar: 'विराटनगर' })).toBe('विराटनगर');
+    expect(transliterate('kathmandu', { kathmandu: 'काठमान्डू' })).toBe('काठमान्डू');
+  });
 });

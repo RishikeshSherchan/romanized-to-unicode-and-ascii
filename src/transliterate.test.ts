@@ -53,4 +53,8 @@ describe('transliterate', () => {
   it('inserts chandrabindu right after the vowel it nasalizes', () => {
     expect(transliterate('aa~khaa')).toBe('आँखा');
   });
+
+  it('converts a period to purna biram (danda)', () => {
+    expect(transliterate('aankhaa mero naam ho.')).toBe('आन्खा मेरो नाम हो।');
+  });
 });

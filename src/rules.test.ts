@@ -15,6 +15,7 @@ describe('rules tables', () => {
     expect(MATRAS.R).toBe('ृ');
     expect(MATRAS.RR).toBe('ॄ');
     expect(MARKS['~']).toBe('ँ');
+    expect(MARKS['.']).toBe('।');
   });
 
   it('orders consonant keys longest-first so multi-character sounds win', () => {

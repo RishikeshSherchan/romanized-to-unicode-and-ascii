@@ -58,14 +58,14 @@
 
   <div class="compare">
     <div>
-      <label for="input">Type here (new way)</label>
+      <label for="input">Type here</label>
       <textarea id="input" placeholder="namaste"></textarea>
-      <p class="caption">Transliterated to real Devanagari Unicode, rendered in the font you picked above.</p>
+      <p class="caption">Shown in the font you picked. For a legacy font this box's actual text is Preeti-encoded ASCII (correct on screen, but breaks if copied elsewhere — see the box on the right).</p>
     </div>
     <div>
-      <label>Old way (same raw text + Preeti)</label>
-      <div id="raw-preeti" class="box"></div>
-      <p class="caption">The exact same keystrokes, never transliterated, shown in Preeti — this is how the old ASCII-glyph-hack fonts actually worked.</p>
+      <label>Unicode output (safe to copy anywhere)</label>
+      <div id="unicode-output" class="box"></div>
+      <p class="caption">The real Devanagari Unicode text, regardless of which font is selected on the left — paste this anywhere and it stays correct.</p>
     </div>
   </div>
 
@@ -76,8 +76,7 @@
     const select = document.getElementById('font-select');
     const noFontsNotice = document.getElementById('no-fonts');
     const input = document.getElementById('input');
-    const rawPreeti = document.getElementById('raw-preeti');
-    rawPreeti.style.fontFamily = '"Preeti Regular"';
+    const unicodeOutput = document.getElementById('unicode-output');
 
     let selectedFont = FONTS[0];
 
@@ -97,6 +96,7 @@
       const unicodeText = transliterate(raw);
       input.value = selectedFont?.legacy ? unicodeToPreeti(unicodeText) : unicodeText;
       input.selectionStart = input.selectionEnd = input.value.length;
+      unicodeOutput.textContent = unicodeText;
     };
 
     if (FONTS.length === 0) {
@@ -137,7 +137,6 @@
         return;
       }
       render();
-      rawPreeti.textContent = raw;
     });
   </script>
 </body>

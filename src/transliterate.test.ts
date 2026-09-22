@@ -80,4 +80,19 @@ describe('transliterate', () => {
     expect(transliterate('biratnagar', { biratnagar: 'विराटनगर' })).toBe('विराटनगर');
     expect(transliterate('kathmandu', { kathmandu: 'काठमान्डू' })).toBe('काठमान्डू');
   });
+
+  it('covers common retroflex place names and everyday words', () => {
+    expect(transliterate('patan')).toBe('पाटन');
+    expect(transliterate('butwal')).toBe('बुटवल');
+    expect(transliterate('itahari')).toBe('इटहरी');
+    expect(transliterate('birgunj')).toBe('वीरगन्ज');
+    expect(transliterate('hetauda')).toBe('हेटौडा');
+    expect(transliterate('dhangadhi')).toBe('धनगढी');
+    expect(transliterate('tansen')).toBe('तान्सेन');
+    expect(transliterate('topi')).toBe('टोपी');
+    expect(transliterate('dhunga')).toBe('ढुंगा');
+    expect(transliterate('ghadi')).toBe('घडी');
+    expect(transliterate('natak')).toBe('नाटक');
+    expect(transliterate('thulo')).toBe('ठूलो');
+  });
 });

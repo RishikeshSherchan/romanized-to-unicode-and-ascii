@@ -15,5 +15,6 @@ export const FONTS = [
   { name: 'Preeti Regular', file: 'Preeti Normal.otf', legacy: 'preeti' },
   { name: 'Preeti Bold', file: 'Preeti Bold.otf', legacy: 'preeti' },
   { name: 'Kantipur Regular', file: 'Kantipur Regular.ttf', legacy: 'kantipur' },
-  { name: 'Fontasy Himali', file: 'Fontasy Himali Regular.ttf', legacy: 'himali' },
+  { name: 'Fontasy Himali (incomplete, 12 missing glyphs)', file: 'Fontasy Himali Regular.ttf', legacy: 'himali' },
+  { name: 'Himali 4 (more complete)', file: 'HIMALI_4.TTF', legacy: 'himali' },
 ];

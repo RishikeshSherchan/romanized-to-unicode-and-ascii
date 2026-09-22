@@ -14,5 +14,5 @@ export const FONTS = [
   { name: 'Hind Bold', file: 'Hind-Bold.ttf' },
   { name: 'Preeti Regular', file: 'Preeti Normal.otf', legacy: 'preeti' },
   { name: 'Preeti Bold', file: 'Preeti Bold.otf', legacy: 'preeti' },
-  // { name: 'Kantipur', file: 'Kantipur.ttf', legacy: 'kantipur' },
+  { name: 'Kantipur Regular', file: 'Kantipur Regular.ttf', legacy: 'kantipur' },
 ];

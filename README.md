@@ -22,6 +22,34 @@ transliterate('namaste'); // 'नमस्ते'
 The output is real Devanagari Unicode (U+0900–U+097F) — safe to copy,
 search, and render in any standard Devanagari font.
 
+### React
+
+An optional React binding ships under a separate entry point, so plain
+Node/browser usage of the main package never pulls in React:
+
+```tsx
+import { useState } from 'react';
+import { TransliterateInput, LegacyEncodedPreview } from 'romanized-to-unicode-and-ascii/react';
+
+function Example() {
+  const [name, setName] = useState('');
+  return (
+    <>
+      <TransliterateInput value={name} onChange={setName} placeholder="namaste" />
+      <LegacyEncodedPreview value={name} font="preeti" />
+    </>
+  );
+}
+```
+
+`TransliterateInput` is a controlled `<textarea>` — you own `value`/`onChange`
+like any other controlled input; it handles the romanized-to-Unicode
+conversion internally on every keystroke. `LegacyEncodedPreview` renders
+the raw ASCII string a legacy font (`"preeti"`, `"kantipur"`, or
+`"himali"`) would need for the same Unicode text, with no wrapper markup
+imposed. `react` is an optional peer dependency — only needed if you
+import from this subpath.
+
 ## Scheme
 
 Standard phonetic (Sanscript/ITRANS-style): "ka" → क, "kha" → ख,

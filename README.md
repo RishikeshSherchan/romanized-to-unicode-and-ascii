@@ -1,18 +1,20 @@
-# nepali-unicode
+# romanized-to-unicode-and-ascii
 
-Convert romanized/phonetic Nepali text into real Devanagari Unicode —
-no special keyboard layout, no Preeti/Kantipur-style font hacks.
+Convert romanized/phonetic Nepali text into real Devanagari Unicode — no
+special keyboard layout, no Preeti/Kantipur-style font hacks — and, if you
+need to support legacy documents, convert that Unicode into the ASCII-glyph
+encoding those old fonts actually use.
 
 ## Install
 
 ```bash
-pnpm add nepali-unicode
+pnpm add romanized-to-unicode-and-ascii
 ```
 
 ## Usage
 
 ```ts
-import { transliterate } from 'nepali-unicode';
+import { transliterate } from 'romanized-to-unicode-and-ascii';
 
 transliterate('namaste'); // 'नमस्ते'
 ```
@@ -48,6 +50,28 @@ built-in list on conflict):
 transliterate('biratnagar', { biratnagar: 'विराटनगर' });
 ```
 
+## Legacy font converters
+
+Old Nepali fonts (Preeti, Kantipur, Himali, ...) predate Unicode support —
+they remap Latin ASCII codepoints to Devanagari-look glyphs, so text typed
+in them isn't real Unicode and breaks when copied, searched, or shown in
+another font. If you need to produce text for one of these fonts anyway
+(e.g. printing to match an old document), convert your Unicode text with:
+
+```ts
+import { unicodeToPreeti, unicodeToKantipur, unicodeToHimali } from 'romanized-to-unicode-and-ascii';
+
+unicodeToPreeti('नमस्ते'); // 'gd:t]' — displays correctly only when rendered in the Preeti font
+```
+
+Each converter's mapping table is transcribed from verified open-source
+sources (not guessed) and cross-checked against real test vectors — see
+the source comments in `src/preeti.ts`, `src/kantipur.ts`, and
+`src/himali.ts` for exact provenance. Known limitation shared by all
+three: literal ASCII punctuation that a font has repurposed as a
+Devanagari key (e.g. `(` and `)` in some fonts) can't currently round-trip
+as literal punctuation.
+
 ## Recommended Devanagari fonts
 
 Pair this library's output with any Unicode-correct Devanagari font.
@@ -57,6 +81,8 @@ Recommended free options:
 - **Mukta** — clean, popular for UI text.
 - **Hind Guptha** — designed for Nepali/Devanagari readability at small sizes.
 
-Avoid legacy fonts like Preeti or Kantipur — they remap Latin ASCII
-codepoints to Devanagari-look glyphs instead of using real Unicode, so
-text typed in them breaks when copied, searched, or shown in another font.
+## License
+
+[PolyForm Noncommercial License 1.0.0](LICENSE) — free for personal,
+educational, and other noncommercial use. Commercial use requires a
+separate agreement — contact the author.

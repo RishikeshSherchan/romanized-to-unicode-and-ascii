@@ -1,14 +1,17 @@
 {
-  "name": "nepali-unicode",
+  "name": "romanized-to-unicode-and-ascii",
   "version": "0.1.0",
-  "description": "Transliterate romanized/phonetic text into real Devanagari Unicode (Nepali).",
+  "description": "Transliterate romanized/phonetic text into real Devanagari Unicode (Nepali), plus convert to legacy ASCII-glyph fonts (Preeti, Kantipur, Himali).",
   "type": "module",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
-  "files": ["dist"],
+  "license": "SEE LICENSE IN LICENSE",
+  "author": "Rishikesh Sherchan",
+  "files": ["dist", "LICENSE"],
   "scripts": {
     "build": "tsc",
-    "test": "vitest run"
+    "test": "vitest run",
+    "prepublishOnly": "pnpm build"
   },
   "devDependencies": {
     "typescript": "^5.6.0",

@@ -3,3 +3,4 @@ dist
 demo/fonts/*
 !demo/fonts/.gitkeep
 .DS_Store
+docs/
